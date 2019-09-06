@@ -11,3 +11,5 @@ RUN pip install Flask
 ADD hello.py /home/hello.py
 
 WORKDIR /home
+
+USER 1001
