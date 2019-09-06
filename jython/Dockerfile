@@ -41,5 +41,9 @@ RUN set -euxo pipefail && \
     ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/ && \
     apk del wget
 
+COPY ./.s2i/bin/ $STI_SCRIPTS_PATH
+
+USER 1001
+
 #CMD ["jython"]
 ENTRYPOINT ["jython"]
