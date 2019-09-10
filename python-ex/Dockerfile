@@ -10,7 +10,8 @@ ENV PYTHON_VERSION=2.7 \
     PYTHONIOENCODING=UTF-8 \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
-    PIP_NO_CACHE_DIR=off
+    PIP_NO_CACHE_DIR=off \
+    S2IDIR="/usr/libexec/s2i"
 
 
 ENV SUMMARY="Platform for building and running Python $PYTHON_VERSION applications" \
@@ -32,7 +33,8 @@ LABEL summary="$SUMMARY" \
       name="centos/python-27-centos7" \
       version="2.7" \
       usage="s2i build https://github.com/sclorg/s2i-python-container.git --context-dir=2.7/test/setup-test-app/ centos/python-27-centos7 python-sample-app" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
+      maintainer="SoftwareCollections.org <sclorg@redhat.com>" \
+      io.openshift.s2i.scripts-url="image://$S2IDIR/bin"
 
 USER root
 RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
