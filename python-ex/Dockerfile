@@ -64,10 +64,6 @@ RUN source scl_source enable python27 && \
     fix-permissions ${APP_ROOT} -P && \
     rpm-file-permissions
 
-RUN yum install -y java-1.8.0-openjdk && \
-    curl -O http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1/jython-installer-2.7.1.jar && \
-    java -jar jython-installer-2.7.1.jar --silent -d /jython-2.7.1
-
 USER 1001
 
 # Set the default CMD to print the usage of the language image.
