@@ -33,7 +33,7 @@ LABEL summary="$SUMMARY" \
       version="2.7" \
       usage="s2i build https://github.com/sclorg/s2i-python-container.git --context-dir=2.7/test/setup-test-app/ centos/python-27-centos7 python-sample-app" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>" \
-      io.openshift.s2i.scripts-url="image://$STI_SCRIPTS_PATH/bin"
+      io.openshift.s2i.scripts-url="image://$STI_SCRIPTS_PATH"
 
 USER root
 RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
