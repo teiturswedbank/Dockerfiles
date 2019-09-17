@@ -5,5 +5,5 @@ NAMESPACE=centos
 [[ $DISTRO =~ rhel* ]] && NAMESPACE=rhscl
 
 cat <<EOF
-This is a S2I jython-2.7 ${DISTRO} base image:
+This is a S2I jython-2.7 ${DISTRO} base image.
 EOF

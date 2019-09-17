@@ -1,49 +1,23 @@
-#
-#  Author: Teitur Arnarson
-#  Date: 2019-09-06 09:58:07 +0000 (Sat, 16 Jan 2016)
-#
-#  This is more or less a copy of Hari Sekhon's Jython Dockerfile, see comment below. The aim here is to get it running on openshift.
+FROM harisekhon/jython
 
-#
-#  Previous Author: Hari Sekhon
-#  Date: 2016-01-16 09:58:07 +0000 (Sat, 16 Jan 2016)
-#
-#  vim:ts=4:sts=4:sw=4:et
-#
-#  https://github.com/harisekhon/Dockerfiles
-#
-#  If you're using my code you're welcome to connect with me on LinkedIn and optionally send me feedback to help improve or steer this or other code I publish
-#
-#  https://www.linkedin.com/in/harisekhon
-#
+LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i \
 
-FROM openjdk:jre-alpine
-MAINTAINER Teitur Arnarson
+ENV \
+    # Path to be used in other layers to place s2i scripts into
+    STI_SCRIPTS_PATH=/usr/libexec/s2i \
+    APP_ROOT=/opt/app-root \
+    # The $HOME is not set by default, but some applications needs this variable
+    HOME=/opt/app-root/src \
+    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH 
 
-ARG JYTHON_VERSION=2.7.0
-ARG JYTHON_HOME=/opt/jython-$JYTHON_VERSION
+# Directory with the sources is set as the working directory so all STI scripts
+# can execute relative to this path.
+WORKDIR ${HOME}
 
-ENV JYTHON_VERSION=$JYTHON_VERSION
-ENV JYTHON_HOME=$JYTHON_HOME
-ENV PATH=$PATH:$JYTHON_HOME/bin
-
-LABEL Description="Jython $JYTHON_VERSION on Alpine + OpenJDK, minimal container"
-
-RUN set -euxo pipefail && \
-    apk add --no-cache bash
-
-RUN set -euxo pipefail && \
-    apk add --no-cache wget && \
-    wget -cO jython-installer.jar "http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$JYTHON_VERSION/jython-installer-$JYTHON_VERSION.jar" && \
-    java -jar jython-installer.jar -s -t minimum -d "$JYTHON_HOME" && \
-    rm -fr "$JYTHON_HOME"/{Docs,Demo,tests} && \
-    rm -f jython-installer.jar && \
-    ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/ && \
-    apk del wget
-
-COPY ./.s2i/bin/ $STI_SCRIPTS_PATH
+# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
 USER 1001
 
-#CMD ["jython"]
-ENTRYPOINT ["jython"]
+CMD $STI_SCRIPTS_PATH/usage
