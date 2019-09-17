@@ -1,7 +1,7 @@
 FROM harisekhon/jython
 
 LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
-      io.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i 
 
 ENV \
     # Path to be used in other layers to place s2i scripts into
