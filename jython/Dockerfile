@@ -24,6 +24,7 @@ COPY ./root/ /
 
 RUN chown -R 1001:0 ${APP_ROOT} && \
     fix-permissions ${APP_ROOT} -P && \
+    chown -R 1001:0 ${JYTHON_HOME} && \
     fix-permissions ${JYTHON_HOME} -P 
  
 USER 1001
