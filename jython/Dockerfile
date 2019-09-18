@@ -23,7 +23,8 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 COPY ./root/ /
 
 RUN chown -R 1001:0 ${APP_ROOT} && \
-    fix-permissions ${APP_ROOT} -P 
+    fix-permissions ${APP_ROOT} -P && \
+    fix-permissions ${JYTHON_HOME} -P 
  
 USER 1001
 
