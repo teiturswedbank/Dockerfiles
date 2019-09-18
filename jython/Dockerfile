@@ -11,6 +11,7 @@ ENV \
     HOME=/opt/app-root/src \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH 
 
+
 # Directory with the sources is set as the working directory so all STI scripts
 # can execute relative to this path.
 WORKDIR ${HOME}
@@ -18,6 +19,12 @@ WORKDIR ${HOME}
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
+# Copy extra files to the image.
+COPY ./root/ /
+
+RUN chown -R 1001:0 ${APP_ROOT} && \
+    fix-permissions ${APP_ROOT} -P 
+ 
 USER 1001
 
 CMD $STI_SCRIPTS_PATH/usage
