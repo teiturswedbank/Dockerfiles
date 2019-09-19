@@ -30,7 +30,7 @@ LABEL summary="$SUMMARY" \
       com.redhat.component="jython27-container" \
       name="teitur/jython-27-centos7" \
       version="2.7" \
-      usage="s2i build https://github.com/teitur/Dockerfiles.git --context-dir=jython/2.7/test/setup-test-app/ teitur/jython-27-centos7 python-sample-app" \
+      usage="s2i build https://github.com/teiturswedbank/Dockerfiles.git --context-dir=jython/2.7/test/setup-test-app/ teitur/jython-27-centos7 python-sample-app" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
