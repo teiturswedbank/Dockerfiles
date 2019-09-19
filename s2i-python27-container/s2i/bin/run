@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "---> Starting application: python app.py ..."
 exec python app.py
 
 >&2 echo "ERROR: It seems something went wrong."
