@@ -1,0 +1,30 @@
+#!/bin/bash
+source /opt/app-root/etc/generate_container_user
+
+set -e
+
+function maybe_run_in_init_wrapper() {
+  if [[ -z "$ENABLE_INIT_WRAPPER" ]]; then
+    exec "$@"
+  else
+    exec $STI_SCRIPTS_PATH/init-wrapper "$@"
+  fi
+}
+
+APP_HOME=$(readlink -f "${APP_HOME:-.}")
+# Change the working directory to APP_HOME
+PYTHONPATH="$(pwd)${PYTHONPATH:+:$PYTHONPATH}"
+cd "$APP_HOME"
+
+app_file_check="${APP_FILE-}"
+APP_FILE="${APP_FILE-app.py}"
+if [[ -f "$APP_FILE" ]]; then
+  echo "---> Running application from Python script ($APP_FILE) ..."
+  maybe_run_in_init_wrapper python "$APP_FILE"
+else
+  test -n "$app_file_check" && (>&2 echo "ERROR: file '$app_file_check' not found.") && exit 1
+fi
+
+>&2 echo "ERROR: don't know how to run your application."
+>&2 echo "Please set either APP_MODULE, APP_FILE or APP_SCRIPT environment variables, or create a file 'app.py' to launch your application."
+exit 1
