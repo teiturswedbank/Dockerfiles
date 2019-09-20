@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo "---> Installing application source ..."
-mv /tmp/src/* "$HOME"
-
-# set permissions for any installed artifacts
-fix-permissions /opt/app-root

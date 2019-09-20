@@ -1,38 +1,10 @@
-# This image provides a Python 2.7 environment you can use to run your Python
 # applications.
 FROM centos/s2i-base-centos7
 
 EXPOSE 8080
 
 ENV PYTHON_VERSION=2.7 \
-    PATH=$HOME/.local/bin/:$PATH \
-    PYTHONUNBUFFERED=1 \
-    PYTHONIOENCODING=UTF-8 \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    PIP_NO_CACHE_DIR=off
-
-
-ENV SUMMARY="Platform for building and running Python $PYTHON_VERSION applications" \
-    DESCRIPTION="Python $PYTHON_VERSION available as container is a base platform for \
-building and running various Python $PYTHON_VERSION applications and frameworks. \
-Python is an easy to learn, powerful programming language. It has efficient high-level \
-data structures and a simple but effective approach to object-oriented programming. \
-Python's elegant syntax and dynamic typing, together with its interpreted nature, \
-make it an ideal language for scripting and rapid application development in many areas \
-on most platforms."
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Python 2.7" \
-      io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,python,python27,python-27,rh-python27" \
-      com.redhat.component="python27-container" \
-      name="centos/python-27-centos7" \
-      version="2.7" \
-      usage="s2i build https://github.com/sclorg/s2i-python-container.git --context-dir=2.7/test/setup-test-app/ centos/python-27-centos7 python-sample-app" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
+    PATH=$HOME/.local/bin/:$PATH 
 
 RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
         python27-python-pip nss_wrapper httpd24 httpd24-httpd-devel httpd24-mod_ssl \
