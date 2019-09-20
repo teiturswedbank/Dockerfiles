@@ -2,3 +2,10 @@
 
 echo "---> Installing application source ..."
 mv /tmp/src/* "$HOME"
+
+if [[ -f requirements.txt ]]; then
+  echo "---> Installing dependencies ..."
+  pip install -r requirements.txt
+fi
+
+
