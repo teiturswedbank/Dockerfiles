@@ -23,6 +23,12 @@ ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
     ENV=${APP_ROOT}/etc/scl_enable \
     PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
 
+# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
+
+# Copy extra files to the image.
+COPY ./root/ /
+
 # This is the list of basic dependencies that all language container image can
 # consume.
 # Also setup the 'openshift' user that is used for the build execution and for the
@@ -105,12 +111,6 @@ RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-dev
 # Directory with the sources is set as the working directory so all STI scripts
 # can execute relative to this path.
 WORKDIR ${HOME}
-
-# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
-COPY ./s2i/bin/ $STI_SCRIPTS_PATH
-
-# Copy extra files to the image.
-COPY ./root/ /
 
 # - Create a Python virtual environment for use by any application to avoid
 #   potential conflicts with Python packages preinstalled in the main Python
