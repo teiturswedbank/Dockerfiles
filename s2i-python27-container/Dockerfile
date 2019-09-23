@@ -1,24 +1,7 @@
-# applications.
 FROM centos:7
 
-ENV SUMMARY="Base image with essential libraries and tools used as a base for \
-builder images like perl, python, ruby, etc." \
-    DESCRIPTION="The s2i-base image, being built upon s2i-core, provides any \
-images layered on top of it with all the tools needed to use source-to-image \
-functionality. Additionally, s2i-base also contains various libraries needed for \
-it to serve as a base for other builder images, like s2i-python or s2i-ruby." \
-    NODEJS_SCL=rh-nodejs10
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="s2i core" \
-      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
-      io.s2i.scripts-url=image:///usr/libexec/s2i \
-      com.redhat.component="s2i-core-container" \
-      name="centos/s2i-core-centos7" \
-      version="1" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
+LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i 
 
 ENV \
     # DEPRECATED: Use above LABEL instead, because this will be removed in future versions.
@@ -28,26 +11,8 @@ ENV \
     APP_ROOT=/opt/app-root \
     # The $HOME is not set by default, but some applications needs this variable
     HOME=/opt/app-root/src \
-    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
-    PLATFORM="el7"
-
-RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-  INSTALL_PKGS="bsdtar \
-  findutils \
-  gettext \
-  groff-base \
-  rsync \
-  scl-utils \
-  tar \
-  unzip \
-  yum-utils" && \
-  mkdir -p ${HOME}/.pki/nssdb && \
-  chown -R 1001:0 ${HOME}/.pki && \
-  yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-  rpm -V $INSTALL_PKGS && \
-  yum -y clean all --enablerepo='*'
-
-
+    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH 
+ 
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
 # the SCL for all scripts without need to do 'scl enable'.
@@ -62,44 +27,11 @@ COPY ./root/ /
 # can execute relative to this path.
 WORKDIR ${HOME}
 
-
 # Reset permissions of modified directories and add default user
 RUN rpm-file-permissions && \
   useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
   chown -R 1001:0 ${APP_ROOT}
-
-#
-# This is the list of basic dependencies that all language container image can
-# consume.
-RUN yum install -y centos-release-scl && \
-  INSTALL_PKGS="autoconf \
-  automake \
-  bzip2 \
-  gcc-c++ \
-  gd-devel \
-  gdb \
-  git \
-  libcurl-devel \
-  libxml2-devel \
-  libxslt-devel \
-  lsof \
-  make \
-  mariadb-devel \
-  mariadb-libs \
-  openssl-devel \
-  patch \
-  postgresql-devel \
-  procps-ng \
-  ${NODEJS_SCL}-npm \
-  sqlite-devel \
-  unzip \
-  wget \
-  which \
-  zlib-devel" && \
-  yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-  rpm -V $INSTALL_PKGS && \
-  yum -y clean all --enablerepo='*'
 
 EXPOSE 8080
 
@@ -137,5 +69,4 @@ RUN source scl_source enable python27 && \
 
 USER 1001
 
-# Set the default CMD to print the usage of the language image.
-CMD $STI_SCRIPTS_PATH/usage
+
