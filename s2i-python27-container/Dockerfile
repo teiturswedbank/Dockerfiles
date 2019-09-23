@@ -43,8 +43,8 @@ ENV PYTHON_VERSION=2.7 \
 #        httpd24-mod_auth_kerb httpd24-mod_ldap httpd24-mod_session atlas-devel gcc-gfortran \
 #        libffi-devel libtool-ltdl enchant" && \
 RUN INSTALL_PKGS="python27 python27-python-devel python27-python-setuptools \
-        python27-python-pip nss_wrapper httpd24 httpd24-httpd-devel httpd24-mod_ssl \
-        httpd24-mod_auth_kerb httpd24-mod_ldap httpd24-mod_session" && \
+        python27-python-pip httpd24 httpd24-mod_ssl \
+        httpd24-mod_auth_kerb" && \
      yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
