@@ -4,8 +4,6 @@ LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
       io.s2i.scripts-url=image:///usr/libexec/s2i 
 
 ENV \
-    # DEPRECATED: Use above LABEL instead, because this will be removed in future versions.
-    STI_SCRIPTS_URL=image:///usr/libexec/s2i \
     # Path to be used in other layers to place s2i scripts into
     STI_SCRIPTS_PATH=/usr/libexec/s2i \
     APP_ROOT=/opt/app-root \
@@ -20,24 +18,13 @@ ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
     ENV=${APP_ROOT}/etc/scl_enable \
     PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
 
-# Copy extra files to the image.
-COPY ./root/ /
-
 # Directory with the sources is set as the working directory so all STI scripts
 # can execute relative to this path.
 WORKDIR ${HOME}
 
-# Reset permissions of modified directories and add default user
-RUN  useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
-      -c "Default Application User" default && \
-  chown -R 1001:0 ${APP_ROOT}
-
 EXPOSE 8080
 
-ENV PYTHON_VERSION=2.7 \
-    PATH=$HOME/.local/bin/:$PATH 
-
-RUN INSTALL_PKGS="python27 python27-python-devel python27-python-setuptools \
+RUN INSTALL_PKGS="python27 python27-python-setuptools \
         python27-python-pip httpd24" && \
     yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
@@ -59,6 +46,8 @@ COPY ./root/ /
 #   under random UID.
 RUN source scl_source enable python27 && \
     virtualenv ${APP_ROOT} && \
+    useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
+      -c "Default Application User" default && \
     chown -R 1001:0 ${APP_ROOT}
 
 USER 1001
