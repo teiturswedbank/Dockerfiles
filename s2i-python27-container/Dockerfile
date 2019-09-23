@@ -14,9 +14,9 @@ ENV \
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
 # the SCL for all scripts without need to do 'scl enable'.
-ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
-    ENV=${APP_ROOT}/etc/scl_enable \
-    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
+#ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
+#    ENV=${APP_ROOT}/etc/scl_enable \
+#    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
 
 # Copy extra files to the image.
 COPY ./root/ /
@@ -60,11 +60,12 @@ COPY ./root/ /
 # - In order to drop the root user, we have to make some directories world
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
-RUN source scl_source enable python27 && \
-    virtualenv ${APP_ROOT} && \
-    chown -R 1001:0 ${APP_ROOT} && \
-    fix-permissions ${APP_ROOT} -P && \
-    rpm-file-permissions
+#RUN source scl_source enable python27 && \
+#    virtualenv ${APP_ROOT} && \
+#    chown -R 1001:0 ${APP_ROOT} && \
+#    fix-permissions ${APP_ROOT} -P && \
+#    rpm-file-permissions
+RUN  chown -R 1001:0 ${APP_ROOT}
 
 USER 1001
 
