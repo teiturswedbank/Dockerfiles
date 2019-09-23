@@ -1,8 +1,24 @@
 # applications.
 FROM centos:7
 
-LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
-      io.s2i.scripts-url=image:///usr/libexec/s2i 
+ENV SUMMARY="Base image with essential libraries and tools used as a base for \
+builder images like perl, python, ruby, etc." \
+    DESCRIPTION="The s2i-base image, being built upon s2i-core, provides any \
+images layered on top of it with all the tools needed to use source-to-image \
+functionality. Additionally, s2i-base also contains various libraries needed for \
+it to serve as a base for other builder images, like s2i-python or s2i-ruby." \
+    NODEJS_SCL=rh-nodejs10
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="s2i core" \
+      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i \
+      com.redhat.component="s2i-core-container" \
+      name="centos/s2i-core-centos7" \
+      version="1" \
+      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 ENV \
     # DEPRECATED: Use above LABEL instead, because this will be removed in future versions.
@@ -15,25 +31,6 @@ ENV \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
     PLATFORM="el7"
 
-
-# When bash is started non-interactively, to run a shell script, for example it
-# looks for this variable and source the content of this file. This will enable
-# the SCL for all scripts without need to do 'scl enable'.
-ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
-    ENV=${APP_ROOT}/etc/scl_enable \
-    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
-
-# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
-COPY ./s2i/bin/ $STI_SCRIPTS_PATH
-
-# Copy extra files to the image.
-COPY ./root/ /
-
-# This is the list of basic dependencies that all language container image can
-# consume.
-# Also setup the 'openshift' user that is used for the build execution and for the
-# application runtime execution.
-# TODO: Use better UID and GID values
 RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
   INSTALL_PKGS="bsdtar \
   findutils \
@@ -50,15 +47,29 @@ RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
   rpm -V $INSTALL_PKGS && \
   yum -y clean all --enablerepo='*'
 
+
+# When bash is started non-interactively, to run a shell script, for example it
+# looks for this variable and source the content of this file. This will enable
+# the SCL for all scripts without need to do 'scl enable'.
+ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
+    ENV=${APP_ROOT}/etc/scl_enable \
+    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
+
+# Copy extra files to the image.
+COPY ./root/ /
+
+# Directory with the sources is set as the working directory so all STI scripts
+# can execute relative to this path.
+WORKDIR ${HOME}
+
+
 # Reset permissions of modified directories and add default user
 RUN rpm-file-permissions && \
   useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
   chown -R 1001:0 ${APP_ROOT}
 
-
-
-
+#
 # This is the list of basic dependencies that all language container image can
 # consume.
 RUN yum install -y centos-release-scl && \
@@ -90,8 +101,6 @@ RUN yum install -y centos-release-scl && \
   rpm -V $INSTALL_PKGS && \
   yum -y clean all --enablerepo='*'
 
-# FROM centos/s2i-base-centos7
-
 EXPOSE 8080
 
 ENV PYTHON_VERSION=2.7 \
@@ -108,9 +117,11 @@ RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-dev
     rpm -e --nodeps centos-logos && \
     yum -y clean all --enablerepo='*'
 
-# Directory with the sources is set as the working directory so all STI scripts
-# can execute relative to this path.
-WORKDIR ${HOME}
+# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
+
+# Copy extra files to the image.
+COPY ./root/ /
 
 # - Create a Python virtual environment for use by any application to avoid
 #   potential conflicts with Python packages preinstalled in the main Python
