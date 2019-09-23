@@ -11,35 +11,15 @@ ENV \
     HOME=/opt/app-root/src \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH 
  
-# When bash is started non-interactively, to run a shell script, for example it
-# looks for this variable and source the content of this file. This will enable
-# the SCL for all scripts without need to do 'scl enable'.
-#ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
-#    ENV=${APP_ROOT}/etc/scl_enable \
-#    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
-
-# Copy extra files to the image.
-COPY ./root/ /
-
 # Directory with the sources is set as the working directory so all STI scripts
 # can execute relative to this path.
 WORKDIR ${HOME}
-
-# Reset permissions of modified directories and add default user
-RUN rpm-file-permissions && \
-  useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
-      -c "Default Application User" default && \
-  chown -R 1001:0 ${APP_ROOT}
 
 EXPOSE 8080
 
 ENV PYTHON_VERSION=2.7 \
     PATH=$HOME/.local/bin/:$PATH 
 
-#RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
-#        python27-python-pip nss_wrapper httpd24 httpd24-httpd-devel httpd24-mod_ssl \
-#        httpd24-mod_auth_kerb httpd24-mod_ldap httpd24-mod_session atlas-devel gcc-gfortran \
-#        libffi-devel libtool-ltdl enchant" && \
 RUN INSTALL_PKGS="python27 python27-python-setuptools python27-python-pip" && \
     yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
@@ -51,22 +31,9 @@ RUN INSTALL_PKGS="python27 python27-python-setuptools python27-python-pip" && \
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
-# Copy extra files to the image.
-COPY ./root/ /
-
-# - Create a Python virtual environment for use by any application to avoid
-#   potential conflicts with Python packages preinstalled in the main Python
-#   installation.
-# - In order to drop the root user, we have to make some directories world
-#   writable as OpenShift default security model is to run the container
-#   under random UID.
-#RUN source scl_source enable python27 && \
-#    virtualenv ${APP_ROOT} && \
-#    chown -R 1001:0 ${APP_ROOT} && \
-#    fix-permissions ${APP_ROOT} -P && \
-#    rpm-file-permissions
-RUN  chown -R 1001:0 ${APP_ROOT}
+# Reset permissions of modified directories and add default user
+RUN  useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
+      -c "Default Application User" default && \
+     chown -R 1001:0 ${APP_ROOT}
 
 USER 1001
-
-
