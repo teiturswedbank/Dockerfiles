@@ -4,8 +4,6 @@ LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
       io.s2i.scripts-url=image:///usr/libexec/s2i 
 
 ENV \
-    # DEPRECATED: Use above LABEL instead, because this will be removed in future versions.
-    STI_SCRIPTS_URL=image:///usr/libexec/s2i \
     # Path to be used in other layers to place s2i scripts into
     STI_SCRIPTS_PATH=/usr/libexec/s2i \
     APP_ROOT=/opt/app-root \
@@ -28,8 +26,8 @@ COPY ./root/ /
 WORKDIR ${HOME}
 
 # Reset permissions of modified directories and add default user
-RUN rpm-file-permissions && \
-  useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
+# RUN rpm-file-permissions && \
+RUN  useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
   chown -R 1001:0 ${APP_ROOT}
 
@@ -61,8 +59,8 @@ COPY ./root/ /
 RUN source scl_source enable python27 && \
     virtualenv ${APP_ROOT} && \
     chown -R 1001:0 ${APP_ROOT} && \
-    fix-permissions ${APP_ROOT} -P && \
-    rpm-file-permissions
+    fix-permissions ${APP_ROOT} -P 
+#     rpm-file-permissions
 
 USER 1001
 
