@@ -24,8 +24,8 @@ WORKDIR ${HOME}
 
 EXPOSE 8080
 
-RUN INSTALL_PKGS="python37 python37-python-setuptools \
-        python37-python-pip httpd24" && \
+RUN INSTALL_PKGS="rh-python36 rh-python36-python-devel rh-python36-python-setuptools \
+        th-python36-python-pip httpd24" && \
     yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
@@ -44,7 +44,7 @@ COPY ./root/ /
 # - In order to drop the root user, we have to make some directories world
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
-RUN source scl_source enable python37 && \
+RUN source scl_source enable python36 && \
     virtualenv ${APP_ROOT} && \
     useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
