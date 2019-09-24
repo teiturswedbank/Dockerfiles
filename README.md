@@ -1,5 +1,45 @@
 Create a custom Python parent image for OpenShift
 -------------------------------------------------
+We follow the example of creating an s2i Python 3.6 image stream.  
+See s2i-python-containers/3_6
+
+A parent image for OpenShift must include
+* Dockerfile
+* s2i-scripts
+
+### The Dockerfile
+We briefly outline what is going on in the Python 3.6 Dockerfile  
+https://github.com/teiturswedbank/Dockerfiles/blob/master/s2i-python-container/3_6/Dockerfile
+
+Use a clean Centos 7 as parent image
+```
+FROM centos:7
+```
+
+Useful environment variables
+```
+ENV APP_ROOT=/opt/app-root \
+    HOME=/opt/app-root/src 
+```
+
+Set working directory
+```
+WORKDIR ${HOME}
+```
+
+Expose ports
+```
+EXPOSE 8080
+```
+
+Create a service user
+```
+RUN useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
+      -c "Default Application User" default && \
+    chown -R 1001:0 ${APP_ROOT}
+
+USER 1001
+```
 
 ### The s2i scripts
 Minimal s2i scripts
@@ -36,8 +76,6 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 Prerequisits
 * Install Docker Engine locally on your Linux (don't even think about using windows 7)  
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
-
-Assume you want to build an s2i docker image for Python 3.6 (check s2i-python-containers/3_6)
 
 Build the docker image locally
 ```
