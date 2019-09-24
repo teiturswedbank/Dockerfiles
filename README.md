@@ -32,4 +32,8 @@ ENV STI_SCRIPTS_PATH=/usr/libexec/s2i
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 ```
 
-
+### Build image locally and push to hub.docker.com
+Build the docker image locally
+```
+docker build --tag=<local tag for docker image> .
+```
