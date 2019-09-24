@@ -64,4 +64,20 @@ Push to docker hub
 docker push teiturswedbank/s2i-python36-centos7
 ```
 
+### Try out the new image stream on OpenShift
+SSH your OpenShift host and enter credentials.
 
+Create the python-dummy application using the Python 3.6 image stream created above.
+```
+oc new-app teiturswedbank/s2i-python36-centos7~https://github.com/teiturswedbank/python-dummy.git
+```
+
+Expose the app (command line or in GUI under Applications->Routes->Create Route)
+```
+oc expose svc/python-dummy
+```
+
+View the result (in this case running in an OpenShift namespace xva-platform)
+```
+curl http://python-dummy-xva-platform.preprod.swedbank.net
+```
