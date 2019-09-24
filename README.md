@@ -11,12 +11,12 @@ A parent image for OpenShift must include
 We briefly outline what is going on in the Python 3.6 Dockerfile  
 https://github.com/teiturswedbank/Dockerfiles/blob/master/s2i-python-container/3_6/Dockerfile
 
-Use a clean Centos 7 as parent image
+Use an official Centos 7 as parent image (see https://hub.docker.com/_/centos)
 ```
 FROM centos:7
 ```
 
-Useful environment variables
+Choose a location for the application
 ```
 ENV APP_ROOT=/opt/app-root \
     HOME=/opt/app-root/src 
@@ -32,7 +32,7 @@ Expose ports
 EXPOSE 8080
 ```
 
-Create a service user
+Create a service account user
 ```
 RUN useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
