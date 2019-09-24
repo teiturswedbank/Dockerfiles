@@ -1,9 +1,0 @@
-#!/bin/sh
-
-DISTRO=`cat /etc/*-release | grep ^ID= | grep -Po '".*?"' | tr -d '"'`
-NAMESPACE=centos
-[[ $DISTRO =~ rhel* ]] && NAMESPACE=rhscl
-
-cat <<EOF
-This is a S2I jython-2.7 ${DISTRO} base image.
-EOF

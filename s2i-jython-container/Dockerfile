@@ -1,47 +1,36 @@
+FROM centos:7
+
+LABEL io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i 
+
+ENV \
+    # Path to be used in other layers to place s2i scripts into
+    STI_SCRIPTS_PATH=/usr/libexec/s2i \
+    APP_ROOT=/opt/app-root \
+    # The $HOME is not set by default, but some applications needs this variable
+    HOME=/opt/app-root/src \
+    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
+    # Define commonly used JAVA_HOME variable
+    JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
  
-# This image provides a Python 2.7 environment you can use to run your Python
-# applications.
-FROM centos/s2i-base-centos7
+# When bash is started non-interactively, to run a shell script, for example it
+# looks for this variable and source the content of this file. This will enable
+# the SCL for all scripts without need to do 'scl enable'.
+ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
+    ENV=${APP_ROOT}/etc/scl_enable \
+    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
+
+# Directory with the sources is set as the working directory so all STI scripts
+# can execute relative to this path.
+WORKDIR ${HOME}
 
 EXPOSE 8080
 
-ENV JYTHON_VERSION=2.7 \
-    PATH=$HOME/.local/bin/:$PATH \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    PIP_NO_CACHE_DIR=off
-
-
-ENV SUMMARY="Platform for building and running Python $PYTHON_VERSION applications" \
-    DESCRIPTION="Python $PYTHON_VERSION available as container is a base platform for \
-building and running various Python $PYTHON_VERSION applications and frameworks. \
-Python is an easy to learn, powerful programming language. It has efficient high-level \
-data structures and a simple but effective approach to object-oriented programming. \
-Python's elegant syntax and dynamic typing, together with its interpreted nature, \
-make it an ideal language for scripting and rapid application development in many areas \
-on most platforms."
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Jython 2.7" \
-      io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,jython,jython27,jython-27" \
-      com.redhat.component="jython27-container" \
-      name="teitur/jython-27-centos7" \
-      version="2.7" \
-      usage="s2i build https://github.com/teiturswedbank/Dockerfiles.git --context-dir=jython/2.7/test/setup-test-app/ teitur/jython-27-centos7 python-sample-app" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
-
-RUN INSTALL_PKGS="libjpeg-turbo libjpeg-turbo-devel python27 python27-python-devel python27-python-setuptools \
-        python27-python-pip nss_wrapper httpd24 httpd24-httpd-devel httpd24-mod_ssl \
-        httpd24-mod_auth_kerb httpd24-mod_ldap httpd24-mod_session atlas-devel gcc-gfortran \
-        libffi-devel libtool-ltdl enchant" && \
+RUN INSTALL_PKGS="java-1.8.0-openjdk" && \
     yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     # Remove centos-logos (httpd dependency) to keep image size smaller.
-    rpm -e --nodeps centos-logos && \
     yum -y clean all --enablerepo='*'
 
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
@@ -56,13 +45,10 @@ COPY ./root/ /
 # - In order to drop the root user, we have to make some directories world
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
-RUN source scl_source enable python27 && \
-    virtualenv ${APP_ROOT} && \
-    chown -R 1001:0 ${APP_ROOT} && \
-    fix-permissions ${APP_ROOT} -P && \
-    rpm-file-permissions
+#RUN source scl_source enable java && \
+#    virtualenv ${APP_ROOT} && \
+RUN useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
+      -c "Default Application User" default && \
+    chown -R 1001:0 ${APP_ROOT}
 
 USER 1001
-
-# Set the default CMD to print the usage of the language image.
-CMD $STI_SCRIPTS_PATH/usage
