@@ -32,7 +32,7 @@ Expose ports
 EXPOSE 8080
 ```
 
-Create a service account user
+Create an application user and switch to that user
 ```
 RUN useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
