@@ -9,9 +9,9 @@ A minimal Python 2.7 image that can act as a parent image to Python 2.7 applicat
 
 Usage
 ---------------------
-The image stream tag fo this image is teiturswedbank/s2i-python27-centos7. 
+This image is stored on hub.docker.io. Access the latest image stream tag by teiturswedbank/s2i-python27-centos7. 
 
-Example application (assuming 
+Example application 
 ```
 oc new-app teiturswedbank/s2i-python27-centos7~https://github.com/teiturswedbank/python-dummy.git
 ```

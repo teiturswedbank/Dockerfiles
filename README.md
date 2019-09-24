@@ -1,7 +1,7 @@
 Create a custom Python parent image for OpenShift
 -------------------------------------------------
 
-## The s2i scripts
+### The s2i scripts
 Minimal s2i scripts
 
 assemble
