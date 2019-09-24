@@ -33,7 +33,35 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 ```
 
 ### Build image locally and push to hub.docker.com
+Prerequisits
+* Install Docker Engine locally on your Linux (don't even think about using windows 7)  
+https://docs.docker.com/install/linux/docker-ce/ubuntu/
+
+Assume you want to build an s2i docker image for Python 3.6 (check s2i-python-containers/3_6)
+
 Build the docker image locally
 ```
-docker build --tag=<local tag for docker image> .
+docker build --tag=s2i-python36-centos7-local .
 ```
+
+Check which images are available locally; the centos7 parent image and the python36 image
+```
+docker images
+```
+
+Tag the latest local image with a docker hub tag
+```
+docker tag s2i-python36-centos7-local:latest teiturswedbank/s2i-python36-centos7
+```
+
+Login to docker hub
+```
+docker login
+```
+
+Push to docker hub
+```
+docker push teiturswedbank/s2i-python36-centos7
+```
+
+
