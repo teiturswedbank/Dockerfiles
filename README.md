@@ -43,7 +43,8 @@ USER 1001
 
 ### The s2i scripts
 Minimal s2i scripts
-* assemble
+* assemble  
+By default the s2i build places the code in /tmp/src.
 ```
 #!/bin/bash
 
