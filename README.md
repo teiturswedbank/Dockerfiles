@@ -43,18 +43,15 @@ USER 1001
 
 ### The s2i scripts
 Minimal s2i scripts
+* assemble
 ```
-assemble
---------
 #!/bin/bash
 
 echo "---> Installing application source ..."
 mv /tmp/src/* "$HOME"
 ```
-
+* run
 ```
-run
----
 #!/bin/bash
 echo "---> Starting application: python app.py ..."
 exec python app.py
