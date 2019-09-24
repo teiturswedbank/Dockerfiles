@@ -11,7 +11,9 @@ ENV \
     HOME=/opt/app-root/src \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
     # Define commonly used JAVA_HOME variable
-    JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+    JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 \
+    JYTHON_VERSION=2.7.0 \
+    JYTHON_HOME=/opt/jython/jython-2.7.0
  
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
@@ -26,12 +28,17 @@ WORKDIR ${HOME}
 
 EXPOSE 8080
 
-RUN INSTALL_PKGS="java-1.8.0-openjdk" && \
+RUN INSTALL_PKGS="wget java-1.8.0-openjdk" && \
     yum install -y centos-release-scl && \
     yum -y --setopt=tsflags=nodocs install --enablerepo=centosplus $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     # Remove centos-logos (httpd dependency) to keep image size smaller.
-    yum -y clean all --enablerepo='*'
+    yum -y clean all --enablerepo='*' && \
+    wget -cO jython-installer.jar "http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$JYTHON_VERSION/jython-installer-$JYTHON_VERSION.jar" && \
+    java -jar jython-installer.jar -s -t standard -d "$JYTHON_HOME" && \
+    rm -fr "$JYTHON_HOME"/{Docs,Demo,tests} && \
+    rm -f jython-installer.jar && \
+    ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/
 
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
