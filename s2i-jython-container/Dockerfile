@@ -11,17 +11,10 @@ ENV \
     HOME=/opt/app-root/src \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
     # Define commonly used JAVA_HOME variable
-    JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 \
+    JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk-1.8.0.222.b10-1.el7_7.x86_64 \
     JYTHON_VERSION=2.7.0 \
     JYTHON_HOME=/opt/jython/jython-2.7.0
  
-# When bash is started non-interactively, to run a shell script, for example it
-# looks for this variable and source the content of this file. This will enable
-# the SCL for all scripts without need to do 'scl enable'.
-ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
-    ENV=${APP_ROOT}/etc/scl_enable \
-    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
-
 # Directory with the sources is set as the working directory so all STI scripts
 # can execute relative to this path.
 WORKDIR ${HOME}
@@ -38,13 +31,11 @@ RUN INSTALL_PKGS="wget java-1.8.0-openjdk" && \
     java -jar jython-installer.jar -s -t standard -d "$JYTHON_HOME" && \
     rm -fr "$JYTHON_HOME"/{Docs,Demo,tests} && \
     rm -f jython-installer.jar && \
-    ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/
+    ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/ && \
+    pip install --index-url https://pypi.python.org/simple/ --upgrade pip
 
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH.
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
-
-# Copy extra files to the image.
-COPY ./root/ /
 
 # - Create a Python virtual environment for use by any application to avoid
 #   potential conflicts with Python packages preinstalled in the main Python
@@ -52,8 +43,6 @@ COPY ./root/ /
 # - In order to drop the root user, we have to make some directories world
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
-#RUN source scl_source enable java && \
-#    virtualenv ${APP_ROOT} && \
 RUN useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
     chown -R 1001:0 ${APP_ROOT}
