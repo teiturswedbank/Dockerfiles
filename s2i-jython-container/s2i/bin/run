@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [[ "$APP_FILE"=="" ]]; then
+if [[ -z "$APP_FILE" ]]; then
     APP_FILE="app.py"
 fi
 
-echo "---> Starting application: jython app.py ..."
+echo "---> Starting application: jython $APP_FILE ..."
 exec jython "$APP_FILE"
 
 >&2 echo "ERROR: It seems something went wrong."
