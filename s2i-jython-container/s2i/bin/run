@@ -1,6 +1,11 @@
 #!/bin/bash
+
+if [[ "$APP_FILE"=="" ]]; then
+    APP_FILE="app.py"
+fi
+
 echo "---> Starting application: jython app.py ..."
-exec jython app.py
+exec jython "$APP_FILE"
 
 >&2 echo "ERROR: It seems something went wrong."
 exit 1
