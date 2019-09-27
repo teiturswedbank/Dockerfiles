@@ -1,6 +1,11 @@
 #!/bin/bash
-echo "---> Starting application: python app.py ..."
-exec python app.py
+
+if [[ -z "$APP_FILE" ]]; then
+    APP_FILE="app.py"
+fi
+
+echo "---> Starting application: python $APP_FILE ..."
+exec python "$APP_FILE"
 
 >&2 echo "ERROR: It seems something went wrong."
 exit 1

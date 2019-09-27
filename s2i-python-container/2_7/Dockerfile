@@ -48,8 +48,12 @@ RUN source scl_source enable python27 && \
     virtualenv ${APP_ROOT} && \
     useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
       -c "Default Application User" default && \
-    chown -R 1001:0 ${APP_ROOT}
+    chown -R 1001:0 ${APP_ROOT} && \
+    yum install -y unixODBC && \
+    curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo && \
+    ACCEPT_EULA=Y yum install -y msodbcsql17 && \
+    yum install -y unixODBC-devel && \
+    pip install Sphinx==1.8.5
 
 USER 1001
-
 
